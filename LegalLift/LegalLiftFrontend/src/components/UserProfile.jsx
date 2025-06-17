@@ -1,44 +1,59 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
-const UserProfile = ({ userRole, username, onUpdateProfile }) => {
-  const navigate = useNavigate()
+const UserProfile = ({ role, onUpdateProfile }) => {
+  const navigate = useNavigate();
   const [profileData, setProfileData] = useState({
-    username,
+    username: '',
     phone: '',
-    yearsOfExperience: '',
-    ...(userRole === 'lawyer' && {barNumber: '', specialization: '' }),
-    ...(userRole === 'donor' && {donationPreference: ''})
-  })
+    bio: '',
+    ...(role === 'lawyer' && { 
+      specialization: '', 
+      barNumber: '',
+      yearsOfExperience: '' 
+    }),
+    ...(role === 'donor' && { 
+      organization: '',
+      donationPreference: '' 
+    })
+  });
   
-  const [isEditing, setIsEditing] = useState(false)
-  const [successMessage, setSuccessMessage] = useState('')
+  const [isEditing, setIsEditing] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
 
   const handleChange = (e) => {
-    const { name, value } = e.target
+    const { name, value } = e.target;
     setProfileData(prev => ({
       ...prev,
       [name]: value
-    }))
-  }
+    }));
+  };
 
   const handleSubmit = (e) => {
-    e.preventDefault()
-    console.log('Profile updated:', profileData)
-    onUpdateProfile(profileData)
-    setSuccessMessage('Profile updated successfully!')
-    setIsEditing(false)
-    setTimeout(() => setSuccessMessage(''), 1000)
-  }
+    e.preventDefault();
+    onUpdateProfile(profileData);
+    setSuccessMessage('Profile updated successfully!');
+    setIsEditing(false);
+    setTimeout(() => setSuccessMessage(''), 3000);
+  };
 
   const getRoleName = () => {
-    switch(userRole) {
-      case 'client': return 'Client'
-      case 'lawyer': return 'Lawyer'
-      case 'donor': return 'Donor'
-      default: return 'User'
+    switch(role) {
+      case 'client': return 'Client';
+      case 'lawyer': return 'Lawyer';
+      case 'donor': return 'Donor';
+      default: return 'User';
     }
-  }
+  };
+
+  const getRoleBadgeClass = () => {
+    switch(role) {
+      case 'client': return 'role-client';
+      case 'lawyer': return 'role-lawyer';
+      case 'donor': return 'role-donor';
+      default: return 'role-user';
+    }
+  };
 
   return (
     <div className="profile-container">
@@ -55,28 +70,32 @@ const UserProfile = ({ userRole, username, onUpdateProfile }) => {
       <div className="profile-info">
         <div className="profile-summary">
           <div className="profile-role">
-            <span className={`role-badge ${getRoleBadgeName()}`}>
+            <span className={`role-badge ${getRoleBadgeClass()}`}>
               {getRoleName()}
             </span>
           </div>
-          <p><strong>Username:</strong> {username}</p>
+          
           {!isEditing && (
             <>
-              {profileData.username && <p><strong>username:</strong> {profileData.username}</p>}
+              {profileData.username && <p><strong>Username:</strong> {profileData.username}</p>}
               {profileData.phone && <p><strong>Phone:</strong> {profileData.phone}</p>}
               {profileData.bio && <p><strong>Bio:</strong> {profileData.bio}</p>}
               
-              {""}
-              {userRole === 'lawyer' && profileData.specialization && (
+              {role === 'lawyer' && profileData.specialization && (
                 <p><strong>Specialization:</strong> {profileData.specialization}</p>
               )}
-              {userRole === 'lawyer' && profileData.barNumber && (
+              {role === 'lawyer' && profileData.barNumber && (
                 <p><strong>Bar Number:</strong> {profileData.barNumber}</p>
               )}
+              {role === 'lawyer' && profileData.yearsOfExperience && (
+                <p><strong>Years of Experience:</strong> {profileData.yearsOfExperience}</p>
+              )}
               
-              {""}
-              {userRole === 'donor' && profileData.organization && (
+              {role === 'donor' && profileData.organization && (
                 <p><strong>Organization:</strong> {profileData.organization}</p>
+              )}
+              {role === 'donor' && profileData.donationPreference && (
+                <p><strong>Donation Preference:</strong> {profileData.donationPreference}</p>
               )}
             </>
           )}
@@ -85,15 +104,17 @@ const UserProfile = ({ userRole, username, onUpdateProfile }) => {
         {isEditing ? (
           <form onSubmit={handleSubmit} className="profile-form">
             <div className="form-group">
-              <label>Full Name</label>
+              <label>Username</label>
               <input
                 type="text"
-                name="fullName"
-                value={profileData.fullName}
+                name="username"
+                value={profileData.username}
                 onChange={handleChange}
-                placeholder="Enter your full name"
+                placeholder="Enter your username"
+                required
               />
             </div>
+            
             <div className="form-group">
               <label>Phone Number</label>
               <input
@@ -104,6 +125,7 @@ const UserProfile = ({ userRole, username, onUpdateProfile }) => {
                 placeholder="Enter your phone number"
               />
             </div>
+            
             <div className="form-group">
               <label>Bio</label>
               <textarea
@@ -114,8 +136,8 @@ const UserProfile = ({ userRole, username, onUpdateProfile }) => {
                 rows="3"
               />
             </div>
-            {""}
-            {userRole === 'lawyer' && (
+            
+            {role === 'lawyer' && (
               <>
                 <div className="form-group">
                   <label>Specialization</label>
@@ -138,11 +160,22 @@ const UserProfile = ({ userRole, username, onUpdateProfile }) => {
                     placeholder="Your bar association number"
                   />
                 </div>
+                
+                <div className="form-group">
+                  <label>Years of Experience</label>
+                  <input
+                    type="number"
+                    name="yearsOfExperience"
+                    value={profileData.yearsOfExperience}
+                    onChange={handleChange}
+                    placeholder="Years of legal practice"
+                    min="0"
+                  />
+                </div>
               </>
             )}
 
-            {""}
-            {userRole === 'donor' && (
+            {role === 'donor' && (
               <>
                 <div className="form-group">
                   <label>Organization</label>
@@ -202,7 +235,7 @@ const UserProfile = ({ userRole, username, onUpdateProfile }) => {
         )}
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default UserProfile
+export default UserProfile;

@@ -6,7 +6,7 @@ const Campaign = ({
   targetAmount: initialTargetAmount = '', 
   description: initialDescription = '', 
   currentAmount: initialCurrentAmount = '', 
-  balance: initialBalance = '' 
+  balance: initialBalance = '',
 }) => {
   const navigate = useNavigate()
   const [isEditing, setIsEditing] = useState(false)
@@ -100,6 +100,7 @@ const Campaign = ({
           <p>Current Amount: {profileData.currentAmount}</p>
           <p>Balance: {profileData.balance}</p>
           <button onClick={() => setIsEditing(true)}>Edit</button>
+          <button onClick={() => save(true)}>Launch</button>
         </div>
       )}
     </div>

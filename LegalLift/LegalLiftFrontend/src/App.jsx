@@ -1,49 +1,43 @@
 import { useState, useEffect } from 'react'
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
-import Login from './components/Login.jsx'
-import Signup from './components/Signup.jsx'
-import Dashboard from './components/Dashboard.jsx'
-import UserProfile from './components/UserProfile.jsx'
+import Login from './components/Login'
+import Signup from './components/Signup'
+import Dashboard from './components/Dashboard'
 import './index.css'
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [userRole, setUserRole] = useState(null)
   const [isCheckingAuth, setIsCheckingAuth] = useState(true)
+  const [userData, setUserData] = useState(null)
 
   useEffect(() => {
-    const checkAuth = () => {
-      const savedUser = localStorage.getItem('user');
-      if (savedUser) {
-        try {
-          const user = JSON.parse(savedUser);
-          setIsAuthenticated(true);
-          setUserRole(user.role);
-        } catch (error) {
-          console.error('Failed to parse user data', error);
-          localStorage.removeItem('user');
-        }
-      }
-      setIsCheckingAuth(false);
-    };
-
-    checkAuth();
+    const savedUser = localStorage.getItem('user');
+    if (savedUser) {
+      const user = JSON.parse(savedUser);
+      setIsAuthenticated(true);
+      setUserRole(user.role);
+      setUserData(user);
+    }
+    setIsCheckingAuth(false);
   }, []);
 
-  const handleLogin = (role) => {
+  const handleLogin = (user) => {
     setIsAuthenticated(true);
-    setUserRole(role);
-    localStorage.setItem('user', JSON.stringify({ role }));
+    setUserRole(user.role);
+    setUserData(user);
+    localStorage.setItem('user', JSON.stringify(user));
   }
 
   const handleLogout = () => {
     setIsAuthenticated(false);
     setUserRole(null);
+    setUserData(null);
     localStorage.removeItem('user');
   }
 
   if (isCheckingAuth) {
-    return <div>Loading...</div>;
+    return <div className="loading-screen">Loading...</div>;
   }
 
   return (
@@ -55,15 +49,21 @@ function App() {
         />
         <Route 
           path="/signup" 
-          element={isAuthenticated ? <Navigate to="/dashboard" /> : <Signup />} 
+          element={isAuthenticated ? <Navigate to="/dashboard" /> : <Signup onLogin={handleLogin} />} 
         />
         <Route 
-          path="/dashboard" 
-          element={isAuthenticated ? <Dashboard role={userRole} onLogout={handleLogout} /> : <Navigate to="/login" />} 
-        />
-        <Route 
-          path="/profile" 
-          element={isAuthenticated ? <UserProfile onLogout={handleLogout} /> : <Navigate to="/login" />} 
+          path="/dashboard/*" 
+          element={
+            isAuthenticated ? (
+              <Dashboard 
+                role={userRole} 
+                userData={userData} 
+                onLogout={handleLogout} 
+              />
+            ) : (
+              <Navigate to="/login" />
+            )
+          } 
         />
         <Route 
           path="/" 
