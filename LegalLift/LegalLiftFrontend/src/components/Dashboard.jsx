@@ -1,168 +1,65 @@
-import crowdfundingWallpaper from './images/CrowdfundingRefunds.jpg';
+import React, { useState } from 'react';
+import AboutUs from '../pages/AboutUs';
 import UserProfile from './UserProfile';
-import About from './About';
-import { useState } from 'react';
+import Campaign from './Campaign';
+import CampaignList from './CampaignList';
+import ContactUs from './ContactUs';
+import Login from '../pages/Login';
+import Signup from '../pages/Signup';
 
-const Dashboard = ({ role, onLogout }) => {
-  const [activeTab, setActiveTab] = useState('dashboard');
-  
-  const getRoleName = () => {
-    switch(role) {
-      case 'client': return 'Client';
-      case 'lawyer': return 'Lawyer';
-      case 'donor': return 'Donor';
-      default: return 'User';
-    }
-  };
-
-  const getRoleBadgeClass = () => {
-    switch(role) {
-      case 'client': return 'role-client';
-      case 'lawyer': return 'role-lawyer';
-      case 'donor': return 'role-donor';
-      default: return 'role-user';
-    }
-  };
-
-  const renderContent = () => {
-    switch(activeTab) {
-      case 'campaign':
-        return <Campaign role={role} />;
-      case 'profile':
-        return <UserProfile role={role} />;
-      case 'cases':
-        return <Cases role={role} />;
-      case 'about':
-        return <About />;
-      default:
-        return (
-          <>
-            <p>
-              You are logged in as: 
-              <span className={`role-badge ${getRoleBadgeClass()}`}>
-                {getRoleName()}
-              </span>
-            </p>
-            
-            {role === 'client' && (
-              <div className="role-section">
-                <h2>Client Dashboard</h2>
-                <img 
-                  src={crowdfundingWallpaper} 
-                  alt="Legal crowdfunding illustration"
-                  className="dashboard-image"
-                />
-                <p>
-                  As a low-income earner in Nigeria,
-                  you can create legal funding requests here,
-                  to fund your legal cases.
-                </p>
-                <button 
-                  className="action-btn"
-                  onClick={() => setActiveTab('campaign')}
-                >
-                  Create New Case
-                </button>
-              </div>
-            )}
-            
-            {role === 'lawyer' && (
-              <div className="role-section">
-                <h2>Lawyer Dashboard</h2>
-                <img 
-                  src={crowdfundingWallpaper} 
-                  alt="Lawyer working illustration"
-                  className="dashboard-image"
-                />
-                <p>
-                  As a lawyer, you can view, reject and accept cases
-                  from clients who need legal assistance.
-                </p>
-                <button 
-                  className="action-btn"
-                  onClick={() => setActiveTab('cases')}
-                >
-                  View All Cases
-                </button>
-              </div>
-            )}
-            
-            {role === 'donor' && (
-              <div className="role-section">
-                <h2>Donor Dashboard</h2>
-                <img 
-                  src={crowdfundingWallpaper} 
-                  alt="Crowdfunding donors illustration"
-                  className="dashboard-image"
-                />
-                <p>
-                  As a donor, you can browse legal cases,
-                  check the lawyer bio and contribute to help low-income 
-                  individuals get legal representation.
-                </p>
-                <button 
-                  className="action-btn"
-                  onClick={() => setActiveTab('cases')}
-                >
-                  Browse Cases
-                </button>
-              </div>
-            )}
-          </>
-        );
-    }
-  };
+const Dashboard = () => {
+  const [activeTab, setActiveTab] = useState('about');
 
   return (
-    <div className="dashboard-container">
-      <div className="dashboard-header">
-        <h1>Welcome to LegalLift</h1>
-        <button onClick={onLogout} className="logout-btn">Logout</button>
+    <div className="flex min-h-screen">
+      <div className="w-64 bg-gray-800 text-white p-4">
+        <h2 className="text-xl font-bold mb-6">LegalLift Dashboard</h2>
+        <nav>
+          <ul className="space-y-2">
+            <li>
+              <button 
+                onClick={() => setActiveTab('about')} 
+                className={`w-full text-left p-2 rounded ${activeTab === 'about' ? 'bg-blue-500' : 'hover:bg-gray-700'}`}>
+                About Us
+              </button>
+            </li>
+            <li>
+              <button 
+                onClick={() => setActiveTab('profile')} 
+                className={`w-full text-left p-2 rounded ${activeTab === 'profile' ? 'bg-blue-500' : 'hover:bg-gray-700'}`}>
+                User Profile
+              </button>
+            </li>
+            <li>
+              <button 
+                onClick={() => setActiveTab('create')} 
+                className={`w-full text-left p-2 rounded ${activeTab === 'create' ? 'bg-blue-500' : 'hover:bg-gray-700'}`}>
+                Create Campaign
+              </button>
+            </li>
+            <li>
+              <button 
+                onClick={() => setActiveTab('view')} 
+                className={`w-full text-left p-2 rounded ${activeTab === 'view' ? 'bg-blue-500' : 'hover:bg-gray-700'}`}>
+                View Campaigns
+              </button>
+            </li>
+            <li>
+              <button 
+                onClick={() => setActiveTab('contact')} 
+                className={`w-full text-left p-2 rounded ${activeTab === 'contact' ? 'bg-blue-500' : 'hover:bg-gray-700'}`}>
+                Contact Us
+              </button>
+            </li>
+          </ul>
+        </nav>
       </div>
-
-      <div className="dashboard-tabs">
-        <button 
-          className={`tab-btn ${activeTab === 'dashboard' ? 'active' : ''}`}
-          onClick={() => setActiveTab('dashboard')}
-        >
-          Dashboard
-        </button>
-        
-        {role === 'client' && (
-          <button 
-            className={`tab-btn ${activeTab === 'campaign' ? 'active' : ''}`}
-            onClick={() => setActiveTab('campaign')}
-          >
-            Create Case
-          </button>
-        )}
-        
-        {(role === 'lawyer' || role === 'donor') && (
-          <button 
-            className={`tab-btn ${activeTab === 'cases' ? 'active' : ''}`}
-            onClick={() => setActiveTab('cases')}
-          >
-            {role === 'lawyer' ? 'Manage Cases' : 'Browse Cases'}
-          </button>
-        )}
-        
-        <button 
-          className={`tab-btn ${activeTab === 'profile' ? 'active' : ''}`}
-          onClick={() => setActiveTab('profile')}
-        >
-          Profile
-        </button>
-        
-        <button 
-          className={`tab-btn ${activeTab === 'about' ? 'active' : ''}`}
-          onClick={() => setActiveTab('about')}
-        >
-          About Us
-        </button>
-      </div>
-      
-      <div className="dashboard-content">
-        {renderContent()}
+      <div className="flex-1 p-8">
+        {activeTab === 'about' && <AboutUs />}
+        {activeTab === 'profile' && <UserProfile username="user123" password="password123" onUpdate={() => {}} />}
+        {activeTab === 'create' && <CreateCampaign />}
+        {activeTab === 'view' && <CampaignList />}
+        {activeTab === 'contact' && <ContactUs />}
       </div>
     </div>
   );
